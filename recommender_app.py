@@ -58,6 +58,7 @@ def init__recommender_app():
         ratings_df = load_ratings()
         sim_df = load_course_sims()
         course_df = load_courses()
+        course_df = course_df[['TITLE', 'DESCRIPTION','COURSE_ID']].sort_values(by='COURSE_ID')
         course_bow_df = load_bow()
         #added by MM
         
@@ -66,7 +67,7 @@ def init__recommender_app():
     st.success('Datasets loaded successfully...')
 
     st.markdown("""---""")
-    st.subheader("Select courses that you have audited or completed: ")
+    st.subheader("Select courses that are of interest to you: ")
 
     # Build an interactive table for `course_df`
     gb = GridOptionsBuilder.from_dataframe(course_df)
@@ -85,10 +86,11 @@ def init__recommender_app():
         fit_columns_on_grid_load=False,
     )
 
-    results = pd.DataFrame(response["selected_rows"], columns=['COURSE_ID', 'TITLE', 'DESCRIPTION'])
+    results = pd.DataFrame(response["selected_rows"], columns=['TITLE', 'DESCRIPTION','COURSE_ID'])
     results = results[['COURSE_ID', 'TITLE']]
     st.subheader("Your courses: ")
-    st.table(results)
+    st.table(results[['TITLE','COURSE_ID']])
+    
     return results
 
 
@@ -124,7 +126,7 @@ def predict(model_name, params):
     with st.spinner('Generating course recommendations: '):
         time.sleep(0.5)
         res = backend.predict(model_name, params)
-    st.success('Recommendations generated!')
+    
     return res
 
 def show_train_button():
@@ -249,9 +251,16 @@ if pred_button and selected_courses_df.shape[0] > 0:
     
     res_df = predict(model_selection, params)
     res_df = res_df[['COURSE_ID', 'SCORE']]
-    course_df = load_courses()
-    res_df = pd.merge(res_df, course_df, on=["COURSE_ID"])#.drop('COURSE_ID', axis=1)
-    st.table(res_df)
+    
+    if len(res_df) == 0:
+        st.warning('No recommendation results have been generated!' \
+                + ' Please select more courses, or tweak the hyperparameters and try again.' )
+        
+    else:
+        st.success('Recommendations generated!')
+        course_df = load_courses()
+        res_df = pd.merge(res_df, course_df, on=["COURSE_ID"])
+        st.table(res_df[['SCORE','TITLE','DESCRIPTION','COURSE_ID']])
     
 elif pred_button and selected_courses_df.shape[0] == 0:
-    assert 1==0, 'No Courses Selected!'
+    st.warning('You have not selected any courses!')
