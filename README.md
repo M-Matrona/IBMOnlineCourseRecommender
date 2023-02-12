@@ -1,4 +1,4 @@
-# MOOCRec
+# IBMOnlineCourseRecommender
 
 This project is a Streamlit web application of recommender systems which recommend new courses to the user after courses the user is interested in are selected. 
 
