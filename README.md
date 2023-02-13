@@ -4,6 +4,10 @@ This project is a Streamlit web application of recommender systems to recommend 
 
 The project and larger dataset were part of the capstone requirement of IBM's Machine Learning Professional Certificate offered on Coursera.  
 
+Follow this link to the application:
+
+https://m-matrona-ibmonlinecourserecommender-recommender-app-3e4mrs.streamlit.app/
+
 Interfacing with the GUI is described below:
 
 1) Scroll through the list of available courses and select courses you have an interest in.  Note, this data was implemented as received from IBM.  There are effective duplicate courses that vary by one character in the title or the description.
